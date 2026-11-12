@@ -4,7 +4,7 @@
 
 ## Full suite: HA 2026.10.4
 
-The **111 tests** use the real Home Assistant test runtime. They cover exact-model selection, OAuth state/expiry/reauth using synthetic credentials, readable decoding, duplicate suppression, persistence, setup/unload/removal, synthetic MQTT parsing, mocked cloud HTTP requests, HACS metadata, installed dependency metadata, and browser-facing setup response serialization. They also exercise stage-specific failure messages, real transport error parsing with mocked HTTP responses, safe numeric-code validation, secret-bearing exception redaction, and a post-consent callback-host substitution. External connections are blocked; setup HTTP tests allow loopback only. No test controls a lock.
+The **115 tests** use the real Home Assistant test runtime. They cover exact-model selection, OAuth state/expiry/reauth using synthetic credentials, readable decoding, duplicate suppression, persistence, setup/unload/removal, synthetic MQTT parsing, mocked cloud HTTP requests, HACS metadata, installed dependency metadata, and browser-facing setup response serialization. They also exercise stage-specific failure messages, real transport error parsing with mocked HTTP responses, safe numeric-code validation, secret-bearing exception redaction, and a post-consent callback-host substitution. External connections are blocked; setup HTTP tests allow loopback only. No test controls a lock.
 
 ## Setup and diagnostic smoke test: HA 2026.11.1
 
@@ -14,7 +14,7 @@ The test exercises authenticated POST `/api/config/config_entries/flow`, verifyi
 
 These are backend HTTP response and message-format checks, not browser pixel/rendering tests or a live authorization success claim.
 
-The available `pytest-homeassistant-custom-component==0.13.375` harness targets HA 2026.10.4 and imports a logger helper removed in 2026.11.1. Therefore the **full 111-test suite is not claimed as passing on 2026.11.1**. The independent smoke test avoids modifying HA or inventing replacement test helpers. `tools/run_tests.py` initializes HA before pytest plugins to preserve HA's HTTP/schema compatibility aliases.
+The available `pytest-homeassistant-custom-component==0.13.375` harness targets HA 2026.10.4 and imports a logger helper removed in 2026.11.1. Therefore the **full 115-test suite is not claimed as passing on 2026.11.1**. The independent smoke test avoids modifying HA or inventing replacement test helpers. `tools/run_tests.py` initializes HA before pytest plugins to preserve HA's HTTP/schema compatibility aliases.
 
 To reproduce the smoke test in a separate local environment:
 
@@ -34,6 +34,14 @@ Never point diagnostic tools at a live HA configuration. The smoke tool creates 
 
 Synthetic fingerprint and palm-code tests verify decoding, not live biometric recognition. The normal fingerprint event's meaning was separately corroborated through an existing integration. No private device identifiers, household timestamps, credential IDs, raw histories, or biometric payloads are published.
 
-Not yet verified: live standalone OAuth/MQTT delivery, successful setup in the user's HA instance, palm-vein event-code mapping, cloud reliability, physical-use latency, or migration of existing automations. A locally working setup form or diagnostic message does not establish those capabilities. v0.1.2 diagnoses failures; it is not a verified fix for the unresolved live authorization problem.
+## Isolated live token exchange
+
+The separately approved v0.1.3 candidate used the actual integration's login initialization and retained token client from a temporary loopback server on a Mac. It returned **HTTP 200 / API code 0**, with required token fields present. The preceding same-Mac comparison returned success for upstream-style defaults and API -6 for v0.1.2-style defaults. The candidate changes several conventions together; no single causal field was isolated. See `public-oauth-validation.json` for the allowlisted result, not account data or raw cloud responses.
+
+Tokens were checked in memory and discarded, never copied into HA or used for device discovery/control. No refresh or revocation was performed; local discard does not revoke the vendor-side grant. The temporary listener was stopped and closure verified. This is not a full integration test on the HA VM.
+
+The offline suite additionally verifies pinned transport identity, SDK-derived state, decimal callback identifiers, callback replay rejection and retained-client cleanup on abort/expiry.
+
+Not yet verified: live standalone device discovery/MQTT delivery, successful setup in the user's HA instance, palm-vein event-code mapping, cloud reliability, physical-use latency, or migration of existing automations. Keep existing integrations and automations until those checks succeed.
 
 This is a HACS-compatible custom repository, not a default catalogue entry. The retained upstream license is non-OSI and must not be relabelled to pass a catalogue check.

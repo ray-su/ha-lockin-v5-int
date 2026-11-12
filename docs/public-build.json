@@ -1,10 +1,11 @@
 {
-  "built_at_utc": "2026-11-12T03:12:48.039335+00:00",
-  "version": "0.1.2",
+  "built_at_utc": "2026-11-12T05:42:01.711904+00:00",
+  "version": "0.1.3",
   "python": "3.14.7",
   "home_assistant": "2026.10.4",
   "network_in_tests": "external sockets disabled; loopback-only setup HTTP tests; cloud/auth mocked",
   "coverage_scope": "new integration code, excluding vendored transport",
-  "live_standalone_oauth_and_device_validation": "not performed",
+  "live_oauth_evidence": "see separately recorded docs/public-oauth-validation.json; not exercised by this build",
+  "live_standalone_device_and_mqtt_validation": "not performed",
   "private_history_included": false
 }

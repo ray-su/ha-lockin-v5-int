@@ -13,8 +13,9 @@ from homeassistant import config_entries
 from homeassistant.components import webhook
 from homeassistant.core import callback
 
-from .api import http_client, oauth_client, redirect_url
+from .api import http_client, oauth_authorization, oauth_client, redirect_url
 from .const import DOMAIN, MODEL, NAME, REGIONS
+from .miot.common import get_system_info_str
 from .setup_errors import safe_error_summary
 
 _LOGGER = logging.getLogger(__name__)
@@ -36,6 +37,7 @@ class LockinConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         self._auth: dict = {}
         self._devices: dict = {}
         self._reauth = None
+        self._oauth = None
 
     async def async_step_user(self, user_input: dict[str, Any] | None = None):
         if user_input is not None:
@@ -56,24 +58,29 @@ class LockinConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def _begin_login(self):
         self._cleanup()
+        if self._oauth is not None:
+            await self._oauth.deinit_async()
+            self._oauth = None
         self._code = None
         self._expired = False
-        self._state = secrets.token_urlsafe(32)
-        self._webhook_id = secrets.token_urlsafe(32)
+        self._webhook_id = str(secrets.randbits(64))
         self._redirect = redirect_url(self._webhook_id)
-        client = oauth_client(self._region, self._uuid, self._redirect)
+        system_info = await get_system_info_str(self.hass)
+        client = oauth_client(self._region, self._uuid, self._redirect, system_info=system_info)
         try:
-            self._url = client.gen_auth_url(state=self._state)
-        finally:
+            self._state, self._url = oauth_authorization(client)
+            webhook.async_register(self.hass, DOMAIN, NAME, self._webhook_id, self._handle_callback, allowed_methods=("GET",), local_only=True)
+        except Exception:
             await client.deinit_async()
-        webhook.async_register(self.hass, DOMAIN, NAME, self._webhook_id, self._handle_callback, allowed_methods=("GET",), local_only=True)
+            raise
+        self._oauth = client
         self._expiry = self.hass.loop.call_later(600, self._expire)
         return await self.async_step_login()
 
     async def _handle_callback(self, hass, webhook_id, request):
         state = request.query.get("state", "")
         code = request.query.get("code", "")
-        if self._expired or not hmac.compare_digest(state, self._state) or not code or len(code) > 4096:
+        if self._expired or webhook_id != self._webhook_id or self._code is not None or not hmac.compare_digest(state, self._state) or not code or len(code) > 4096:
             return web.Response(status=400, text="Invalid or expired authorization. Start again in Home Assistant.")
         self._code = code
         # One use only; no code or token in response/logs.
@@ -84,6 +91,13 @@ class LockinConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     def _expire(self):
         self._expired = True
         self._cleanup()
+        self._close_oauth()
+
+    @callback
+    def _close_oauth(self):
+        if self._oauth is not None:
+            client, self._oauth = self._oauth, None
+            self.hass.async_create_task(client.deinit_async())
 
     @callback
     def _cleanup(self):
@@ -97,6 +111,7 @@ class LockinConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     @callback
     def async_remove(self):
         self._cleanup()
+        self._close_oauth()
         self._code = None
         self._auth = {}
         super().async_remove()
@@ -113,7 +128,9 @@ class LockinConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 client = None
                 http = None
                 try:
-                    client = oauth_client(self._region, self._uuid, self._redirect)
+                    client, self._oauth = self._oauth, None
+                    if client is None:
+                        raise RuntimeError("OAuth session unavailable")
                     self._auth = await client.get_access_token_async(code=self._code)
                     self._code = None
                     stage = "device discovery"

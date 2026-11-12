@@ -18,8 +18,13 @@ class ReadOnlyClient(MIoTHttpClient):
         raise PermissionError("This integration has no device-control capability")
 
 
-def oauth_client(region: str, uuid: str, redirect: str) -> MIoTOauthClient:
-    return MIoTOauthClient(client_id=OAUTH2_CLIENT_ID, redirect_url=redirect, cloud_server=region, uuid=uuid)
+def oauth_client(region: str, uuid: str, redirect: str, system_info: str = "") -> MIoTOauthClient:
+    return MIoTOauthClient(client_id=OAUTH2_CLIENT_ID, redirect_url=redirect, cloud_server=region, uuid=uuid, system_info=system_info)
+
+
+def oauth_authorization(client: MIoTOauthClient) -> tuple[str, str]:
+    """Keep the vendor's state convention and URL generation together."""
+    return client.state, client.gen_auth_url()
 
 
 def http_client(region: str, uuid: str, token: str) -> ReadOnlyClient:

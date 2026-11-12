@@ -45,14 +45,11 @@ off Xiaomi or its affiliates' products.
 
 Constants.
 """
-import json
-from pathlib import Path
-
 DOMAIN: str = 'xiaomi_home'
 
-INTEGRATION_VERSION: str = json.loads(
-    (Path(__file__).parent.parent / 'manifest.json').read_text()
-)['version']
+# Version of the vendored Xiaomi transport at the pinned upstream commit,
+# NOT the independent Lockin integration release. Preserve its wire identity.
+INTEGRATION_VERSION: str = 'v0.5.0'
 DEFAULT_NAME: str = 'Xiaomi Home'
 
 DEFAULT_NICK_NAME: str = 'Xiaomi'

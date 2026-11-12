@@ -11,6 +11,7 @@ from custom_components.lockin_v5.const import DOMAIN, MODEL
 @pytest.fixture
 def clients():
     oauth = MagicMock()
+    oauth.state = "TEST"
     oauth.gen_auth_url.return_value = "https://account.xiaomi.com/oauth2/authorize?state=TEST"
     oauth.deinit_async = AsyncMock()
     oauth.get_access_token_async = AsyncMock(return_value={"access_token": "TEST", "refresh_token": "TEST", "expires_ts": 4102444800})
@@ -47,7 +48,7 @@ async def test_full_flow_filters_exact_model_and_closes_sessions(hass, clients):
     assert result["type"] == FlowResultType.CREATE_ENTRY
     assert result["data"]["device"]["model"] == MODEL
     assert "token" not in result["data"]["device"]
-    assert clients[0].deinit_async.await_count == 2
+    assert clients[0].deinit_async.await_count == 1
     clients[1].deinit_async.assert_awaited_once()
 
 
@@ -84,7 +85,7 @@ async def test_oauth_failure_is_sanitized(hass, clients, caplog):
     result = await hass.config_entries.flow.async_configure(result["flow_id"], {})
     assert result["reason"] == "login_failed"
     assert "SECRET-RAW-TOKEN" not in caplog.text
-    assert clients[0].deinit_async.await_count == 2
+    assert clients[0].deinit_async.await_count == 1
 
 
 async def test_duplicate_device(hass, entry, clients):

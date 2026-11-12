@@ -1,10 +1,10 @@
 # Lockin V5 Max INT for Home Assistant
 
-**v0.1.2 · experimental · read-only · only `loock.lock.v2203`**
+**v0.1.3 · experimental · read-only · only `loock.lock.v2203`**
 
 A standalone, single-model integration that turns cryptic lock reports into readable Home Assistant sensors and events. No existing integration is required for runtime operation. This project is unofficial and is not endorsed by the device or cloud vendor.
 
-> **Test candidate, not a verified live migration.** The decoder and Home Assistant lifecycle are tested locally, with external connections blocked and a loopback-only setup HTTP test. Fresh authorization and event delivery through this standalone integration still need live verification. Keep your existing integration until comparison succeeds.
+> **Token exchange verified; full live migration still unverified.** v0.1.3's actual login initialization and token client succeeded in an isolated Mac authorization test (HTTP 200 / API code 0). This did not access HA storage or discover/control devices. Decoder and HA lifecycle checks run offline. Successful setup, device discovery and MQTT/event delivery on the HA host still need validation. Keep your existing integration until those comparisons succeed.
 
 ## Install with HACS / Marketplace
 
@@ -25,11 +25,11 @@ Requires **Home Assistant 2026.10.4 or later** and a HACS-compatible custom-repo
 
 **Manual alternative:** copy `custom_components/lockin_v5/` to `/config/custom_components/lockin_v5/`, then follow the restart/setup steps above. Do not overwrite another integration.
 
-**Updating:** refresh the repository's release information if necessary, install **v0.1.2**, and follow your manager's restart requirement. Restarting an old version is not a substitute for downloading the update. v0.1.1 removed v0.1.0's incompatible `python-slugify==9.1.2` pin; HA continues to manage that dependency. Do not manually downgrade HA's packages.
+**Updating:** refresh the repository's release information if necessary, install **v0.1.3**, and follow your manager's restart requirement. Restarting an old version is not a substitute for downloading the update. v0.1.1 removed v0.1.0's incompatible `python-slugify==9.1.2` pin; HA continues to manage that dependency. Do not manually downgrade HA's packages.
 
-**v0.1.2 is a diagnostic release, not a verified login fix.** If setup fails after the callback, it now identifies **token exchange** versus **device discovery**, with a fixed error category and numeric HTTP/API codes when available. The same safe summary is written to the integration's log without a raw traceback. Share the displayed diagnostic text only—not browser URLs, authorization codes, tokens, account information, or raw logs. HTTP 200 alongside an API error means the request received an HTTP response, not that authorization succeeded. No retry, account authorization, or device action is performed automatically.
+**v0.1.3 aligns OAuth with the exercised upstream conventions.** It preserves the vendored transport's version identity, supplies HA system metadata, uses the SDK's state convention and decimal callback identifier, and retains one client through token exchange. The exact field behind the prior API -6 failure was not isolated; the combined candidate passed the real token-only comparison. If setup fails after the callback, the retained diagnostics identify **token exchange** versus **device discovery**, with a fixed error category and numeric HTTP/API codes when available. The same safe summary is written to the integration's log without a raw traceback. Share the displayed diagnostic text only—not browser URLs, authorization codes, tokens, account information, or raw logs. HTTP 200 alongside an API error means the request received an HTTP response, not that authorization succeeded. No retry, account authorization, or device action is performed automatically.
 
-**Return to v0.1.1:** use your manager's version selection to install the previous release and follow its restart requirement. v0.1.2 makes no config-entry or observation-store schema migration. Both versions retain the dependency correction; v0.1.1 simply lacks these diagnostics.
+**Return to v0.1.2:** use your manager's version selection to install the previous release and follow its restart requirement. v0.1.3 makes no config-entry or observation-store schema migration. Both versions retain the dependency correction and safe diagnostics; v0.1.2 lacks the OAuth compatibility changes and may reproduce the prior authorization failure.
 
 **Rollback:** remove the new config entry, remove this integration through HACS (or delete only `/config/custom_components/lockin_v5/` for a manual installation), and restart Core. Its own observation store is removed when its config entry is removed. Leave/re-enable the old integration; restore your backup if needed. No device settings or enrolled credentials are changed.
 
@@ -68,7 +68,7 @@ There are **no lock, switch, button or other actuator platforms**, and no device
 
 ## Testing and development
 
-Full-suite baseline: **Python 3.14 / Home Assistant 2026.10.4**. A fresh **HA 2026.11.1** instance is separately exercised through its authenticated setup HTTP endpoint, including synthetic callback and failure responses, without the older pytest HA harness. See [testing](docs/TESTING.md), [actual test output](docs/public-tests.txt), and [release notes](docs/RELEASE-v0.1.2.md).
+Full-suite baseline: **Python 3.14 / Home Assistant 2026.10.4**. A fresh **HA 2026.11.1** instance is separately exercised through its authenticated setup HTTP endpoint, including synthetic callback and failure responses, without the older pytest HA harness. See [testing](docs/TESTING.md), [actual test output](docs/public-tests.txt), and [release notes](docs/RELEASE-v0.1.3.md).
 
 ```sh
 uv venv --python 3.14 .venv

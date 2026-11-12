@@ -133,15 +133,15 @@ async def test_failure_stage_in_abort_and_logs_without_secrets(hass, clients, ca
         clients[1].deinit_async.assert_awaited_once()
 
 
-async def test_token_client_constructor_failure_is_safe(hass, clients, caplog):
+async def test_token_exchange_reuses_initialized_client(hass, clients, caplog):
     result, flow = await login_form(hass)
     await authorize(flow)
-    with patch("custom_components.lockin_v5.config_flow.oauth_client", side_effect=RuntimeError(SECRET)):
+    with patch("custom_components.lockin_v5.config_flow.oauth_client", side_effect=RuntimeError(SECRET)) as constructor:
         result = await hass.config_entries.flow.async_configure(result["flow_id"], {})
-    assert result["reason"] == "login_failed"
-    assert result["description_placeholders"] == {
-        "stage": "token exchange", "detail": "Unexpected internal error"}
+    constructor.assert_not_called()
+    assert result["step_id"] == "device"
     assert SECRET not in caplog.text
+    hass.config_entries.flow.async_abort(result["flow_id"])
 
 
 async def test_callback_host_change_does_not_replace_registered_redirect(hass, clients):

@@ -13,7 +13,7 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / "docs"
-PUBLIC_DOCS = ("TESTING.md", "RELEASE-v0.1.0.md", "RELEASE-v0.1.1.md", "RELEASE-v0.1.2.md", "public-tests.txt", "public-smoke-ha-2026.11.1.json", "public-dependencies.json", "public-lint.txt", "public-build.json")
+PUBLIC_DOCS = ("TESTING.md", "RELEASE-v0.1.0.md", "RELEASE-v0.1.1.md", "RELEASE-v0.1.2.md", "RELEASE-v0.1.3.md", "public-oauth-validation.json", "public-tests.txt", "public-smoke-ha-2026.11.1.json", "public-dependencies.json", "public-lint.txt", "public-build.json")
 ROOT_FILES = ("README.md", "LICENSE.md", "hacs.json", ".gitignore", "requirements-test.txt", "pyproject.toml", ".coveragerc")
 
 
@@ -54,7 +54,8 @@ def main():
         "home_assistant": importlib.metadata.version("homeassistant"),
         "network_in_tests": "external sockets disabled; loopback-only setup HTTP tests; cloud/auth mocked",
         "coverage_scope": "new integration code, excluding vendored transport",
-        "live_standalone_oauth_and_device_validation": "not performed",
+        "live_oauth_evidence": "see separately recorded docs/public-oauth-validation.json; not exercised by this build",
+        "live_standalone_device_and_mqtt_validation": "not performed",
         "private_history_included": False,
     }
     (DOCS / "public-build.json").write_text(json.dumps(metadata, indent=2) + "\n")
