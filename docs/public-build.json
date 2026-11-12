@@ -1,0 +1,10 @@
+{
+  "built_at_utc": "2026-11-12T01:26:24.382354+00:00",
+  "version": "0.1.0",
+  "python": "3.14.7",
+  "home_assistant": "2026.10.4",
+  "network_in_tests": "external sockets disabled; cloud/auth mocked",
+  "coverage_scope": "new integration code, excluding vendored transport",
+  "live_standalone_oauth_and_device_validation": "not performed",
+  "private_history_included": false
+}

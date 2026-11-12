@@ -1,0 +1,13 @@
+{
+  "domain": "lockin_v5",
+  "name": "Lockin V5 Max INT",
+  "codeowners": ["@ray-su"],
+  "config_flow": true,
+  "dependencies": ["http"],
+  "documentation": "https://github.com/ray-su/ha-lockin-v5-int",
+  "issue_tracker": "https://github.com/ray-su/ha-lockin-v5-int/issues",
+  "integration_type": "device",
+  "iot_class": "cloud_push",
+  "requirements": ["paho-mqtt==2.1.0", "python-slugify==9.1.2"],
+  "version": "0.1.0"
+}

@@ -1,0 +1,4 @@
+pytest-homeassistant-custom-component==0.13.375
+paho-mqtt==2.1.0
+python-slugify==9.1.2
+ruff==0.17.4

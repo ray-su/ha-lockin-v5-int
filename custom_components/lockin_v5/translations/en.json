@@ -1,0 +1,26 @@
+{
+  "title": "Lockin V5 Max INT",
+  "config": {
+    "step": {
+      "user": {"title": "Lockin V5 Max INT", "description": "Independent, read-only cloud connection for loock.lock.v2203 only. Does not require the Xiaomi Home integration. Use Singapore for the existing Australia account. No lock controls or physical door-position inference.", "data": {"region": "Account server"}},
+      "login": {"title": "Authorize your account", "description": "[Open account login]({login_url}). Complete authorization in a browser on your home network. The registered callback is http://homeassistant.local:8123; it must resolve to this Home Assistant. When the browser says authorization received, return here and press Submit. This link expires after 10 minutes. Never paste codes or tokens into chat."},
+      "device": {"title": "Select your Lockin", "description": "Only Lockin V5 Max INT (loock.lock.v2203) devices are listed.", "data": {"device": "Lock"}},
+      "reauth_confirm": {"title": "Renew account authorization", "description": "Sign in to the same account to restore the lock's reporting connection. This does not operate the lock."}
+    },
+    "error": {"login_pending": "Complete the account login first, then press Submit."},
+    "abort": {
+      "already_configured": "This lock is already configured.",
+      "login_expired": "Authorization expired. Start setup again.",
+      "login_failed": "Authorization or device discovery failed. Start setup again; check the selected server and network.",
+      "no_supported_device": "No accessible loock.lock.v2203 was found on this account/server. Other models are not supported.",
+      "reauth_wrong_account": "The original lock was not found. Sign in with its original account.",
+      "reauth_successful": "Authorization renewed."
+    }
+  },
+  "entity": {"event": {
+    "lock": {"state_attributes": {"event_type": {"state": {"locked": "Locked", "unlocked": "Unlocked", "handle_locked": "Locked using outside handle", "interior_lock_engaged": "Interior lock engaged", "interior_lock_released": "Interior lock released", "child_lock_enabled": "Child lock enabled", "child_lock_disabled": "Child lock disabled", "away_mode_enabled": "Away mode enabled", "away_mode_disabled": "Away mode disabled", "unrecognized": "Unrecognized lock action"}}}},
+    "warning": {"state_attributes": {"event_type": {"state": {"warning": "Warning reported"}}}},
+    "visitor": {"state_attributes": {"event_type": {"state": {"passed_by": "Someone passed by", "at_door": "Someone at the door", "departed": "Visitor departed", "ultrasonic_activity": "Frequent ultrasonic activity"}}}},
+    "doorbell": {"state_attributes": {"event_type": {"state": {"pressed": "Doorbell pressed"}}}}
+  }}
+}

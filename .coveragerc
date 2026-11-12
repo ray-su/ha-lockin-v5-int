@@ -1,0 +1,6 @@
+[run]
+omit =
+    custom_components/lockin_v5/miot/*
+
+[report]
+show_missing = True

@@ -1,0 +1,26 @@
+# Local environments, credentials, generated state, and private observations
+.venv/
+.env
+.env.*
+*.pem
+*.key
+.storage/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.zip
+*.log
+*history*.json
+*history*.txt
+/private/
+/cache/
+# Original private verification reports must never be published.
+/docs/*
+!/docs/TESTING.md
+!/docs/RELEASE-v0.1.0.md
+!/docs/public-tests.txt
+!/docs/public-lint.txt
+!/docs/public-build.json
