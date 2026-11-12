@@ -22,6 +22,7 @@ htmlcov/
 !/docs/TESTING.md
 !/docs/RELEASE-v0.1.0.md
 !/docs/RELEASE-v0.1.1.md
+!/docs/RELEASE-v0.1.2.md
 !/docs/public-smoke-ha-2026.11.1.json
 !/docs/public-dependencies.json
 !/docs/public-tests.txt

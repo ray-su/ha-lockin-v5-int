@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import hmac
+import logging
 import secrets
 from typing import Any
 
@@ -14,6 +15,9 @@ from homeassistant.core import callback
 
 from .api import http_client, oauth_client, redirect_url
 from .const import DOMAIN, MODEL, NAME, REGIONS
+from .setup_errors import safe_error_summary
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class LockinConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -105,22 +109,28 @@ class LockinConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             if not self._code:
                 errors["base"] = "login_pending"
             else:
-                client = oauth_client(self._region, self._uuid, self._redirect)
+                stage = "token exchange"
+                client = None
                 http = None
                 try:
+                    client = oauth_client(self._region, self._uuid, self._redirect)
                     self._auth = await client.get_access_token_async(code=self._code)
                     self._code = None
+                    stage = "device discovery"
                     http = http_client(self._region, self._uuid, self._auth["access_token"])
                     result = await http.get_devices_async()
                     self._devices = {
                         str(did): {key: info.get(key) for key in ("did", "model", "name", "fw_version")}
                         for did, info in result["devices"].items() if info.get("model") == MODEL
                     }
-                except Exception:
-                    # Upstream exception text can contain credential-bearing responses.
-                    return self.async_abort(reason="login_failed")
+                except Exception as error:
+                    # Never log raw exception text, URLs, headers, or cloud bodies.
+                    detail = safe_error_summary(error)
+                    _LOGGER.warning("Lockin setup failed during %s: %s", stage, detail)
+                    return self.async_abort(reason="login_failed", description_placeholders={"stage": stage, "detail": detail})
                 finally:
-                    await client.deinit_async()
+                    if client:
+                        await client.deinit_async()
                     if http:
                         await http.deinit_async()
                 if not self._devices:

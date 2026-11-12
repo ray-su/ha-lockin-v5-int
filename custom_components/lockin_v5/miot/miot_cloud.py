@@ -176,22 +176,25 @@ class MIoTOauthClient:
         )
         if http_res.status == 401:
             raise MIoTOauthError(
-                'unauthorized(401)', MIoTErrorCode.CODE_OAUTH_UNAUTHORIZED)
+                'unauthorized(401)', MIoTErrorCode.CODE_OAUTH_UNAUTHORIZED,
+                http_status=http_res.status)
         if http_res.status != 200:
             raise MIoTOauthError(
-                f'invalid http status code, {http_res.status}')
+                'invalid token HTTP status (body omitted)', http_status=http_res.status)
 
         res_str = await http_res.text()
         res_obj = json.loads(res_str)
         if (
-            not res_obj
+            not isinstance(res_obj, dict)
             or res_obj.get('code', None) != 0
-            or 'result' not in res_obj
+            or not isinstance(res_obj.get('result'), dict)
             or not all(
                 key in res_obj['result']
                 for key in ['access_token', 'refresh_token', 'expires_in'])
         ):
-            raise MIoTOauthError('invalid token response (body omitted)')
+            raise MIoTOauthError(
+                'invalid token response (body omitted)', http_status=http_res.status,
+                cloud_code=res_obj.get('code') if isinstance(res_obj, dict) else None)
 
         return {
             **res_obj['result'],
@@ -336,17 +339,16 @@ class MIoTHttpClient:
         if http_res.status == 401:
             raise MIoTHttpError(
                 'mihome api get failed, unauthorized(401)',
-                MIoTErrorCode.CODE_HTTP_INVALID_ACCESS_TOKEN)
+                MIoTErrorCode.CODE_HTTP_INVALID_ACCESS_TOKEN, http_status=http_res.status)
         if http_res.status != 200:
             raise MIoTHttpError(
-                f'mihome api get failed, {http_res.status}, '
-                f'{url_path}, {params}')
+                'cloud GET failed (details omitted)', http_status=http_res.status)
         res_str = await http_res.text()
         res_obj: dict = json.loads(res_str)
-        if res_obj.get('code', None) != 0:
+        if not isinstance(res_obj, dict) or res_obj.get('code', None) != 0:
             raise MIoTHttpError(
-                f'invalid response code, {res_obj.get("code",None)}, '
-                f'{res_obj.get("message","")}')
+                'invalid cloud response (body omitted)', http_status=http_res.status,
+                cloud_code=res_obj.get('code') if isinstance(res_obj, dict) else None)
         _LOGGER.debug('Cloud GET completed (payload omitted)')
         return res_obj
 
@@ -362,17 +364,16 @@ class MIoTHttpClient:
         if http_res.status == 401:
             raise MIoTHttpError(
                 'mihome api get failed, unauthorized(401)',
-                MIoTErrorCode.CODE_HTTP_INVALID_ACCESS_TOKEN)
+                MIoTErrorCode.CODE_HTTP_INVALID_ACCESS_TOKEN, http_status=http_res.status)
         if http_res.status != 200:
             raise MIoTHttpError(
-                f'mihome api post failed, {http_res.status}, '
-                f'{url_path}, {data}')
+                'cloud POST failed (details omitted)', http_status=http_res.status)
         res_str = await http_res.text()
         res_obj: dict = json.loads(res_str)
-        if res_obj.get('code', None) != 0:
+        if not isinstance(res_obj, dict) or res_obj.get('code', None) != 0:
             raise MIoTHttpError(
-                f'invalid response code, {res_obj.get("code",None)}, '
-                f'{res_obj.get("message","")}')
+                'invalid cloud response (body omitted)', http_status=http_res.status,
+                cloud_code=res_obj.get('code') if isinstance(res_obj, dict) else None)
         _LOGGER.debug('Cloud POST completed (payload omitted)')
         return res_obj
 

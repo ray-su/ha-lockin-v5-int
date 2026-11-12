@@ -8,5 +8,25 @@
   "non_loopback_connections": "blocked",
   "live_ha_or_cloud_access": false,
   "config_entries_created": 0,
-  "integration_version": "0.1.1"
+  "synthetic_failure_probes": [
+    {
+      "synthetic_failure": true,
+      "flow_http_status": 200,
+      "result": "abort",
+      "stage": "token exchange",
+      "diagnostic": "OAuth response error; HTTP 200; API code -12345",
+      "english_message_format_verified": true,
+      "private_payload_absent": true
+    },
+    {
+      "synthetic_failure": true,
+      "flow_http_status": 200,
+      "result": "abort",
+      "stage": "device discovery",
+      "diagnostic": "Cloud API error; HTTP 503",
+      "english_message_format_verified": true,
+      "private_payload_absent": true
+    }
+  ],
+  "integration_version": "0.1.2"
 }

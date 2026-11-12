@@ -4,32 +4,36 @@
 
 ## Full suite: HA 2026.10.4
 
-The 74 tests use the real Home Assistant test runtime. They cover exact-model selection, OAuth state/expiry/reauth using synthetic credentials, readable decoding, duplicate suppression, persistence, setup/unload/removal, synthetic MQTT parsing, mocked cloud HTTP requests, HACS metadata, real installed dependency metadata, and browser-facing setup response serialization. The setup HTTP test permits loopback connections only; other external connections are blocked. No test controls a lock.
+The **111 tests** use the real Home Assistant test runtime. They cover exact-model selection, OAuth state/expiry/reauth using synthetic credentials, readable decoding, duplicate suppression, persistence, setup/unload/removal, synthetic MQTT parsing, mocked cloud HTTP requests, HACS metadata, installed dependency metadata, and browser-facing setup response serialization. They also exercise stage-specific failure messages, real transport error parsing with mocked HTTP responses, safe numeric-code validation, secret-bearing exception redaction, and a post-consent callback-host substitution. External connections are blocked; setup HTTP tests allow loopback only. No test controls a lock.
 
-## Setup smoke test: HA 2026.11.1
+## Setup and diagnostic smoke test: HA 2026.11.1
 
-`public-smoke-ha-2026.11.1.json` records a separate real, fresh HA bootstrap with a temporary configuration and synthetic local administrator. It exercises authenticated POST `/api/config/config_entries/flow` and verifies HTTP 200 with the region form, then aborts the flow and removes the temporary configuration. It neither starts OAuth nor creates an integration config entry. Non-loopback socket connections are blocked. It uses no live HA credentials or private data.
+`public-smoke-ha-2026.11.1.json` records a real, fresh HA bootstrap with a disposable configuration and synthetic local administrator. The bootstrap loads `http`, `config`, and `webhook`; the latter normally comes from `default_config` and is needed for callback routing. The integration does not currently auto-load it in minimal custom configurations.
 
-The available `pytest-homeassistant-custom-component==0.13.375` harness targets HA 2026.10.4 and imports a logger helper removed in 2026.11.1. Therefore the **full 74-test suite is not claimed as passing on 2026.11.1**. The independent smoke test avoids modifying HA or inventing replacement test helpers. `tools/run_tests.py` initializes HA before pytest plugins to preserve HA's HTTP/schema compatibility aliases.
+The test exercises authenticated POST `/api/config/config_entries/flow`, verifying HTTP 200 with the region form. With `--exercise-failures`, it then starts isolated flows, delivers synthetic codes/state through the actual loopback webhook route, and forces token-exchange and device-discovery errors using mocked cloud methods. It verifies the HTTP abort payload, English message formatting, secret-payload exclusion, and flow/auth cleanup. The reported API/error codes are **deliberately synthetic test values**, not responses from Xiaomi or evidence about a user's failure. No real account is authorized, no cloud endpoint is contacted, and no integration entry is created. The temporary config is removed afterward. Non-loopback socket connections are blocked; HA's network-detection probes may produce blocked-socket warnings.
+
+These are backend HTTP response and message-format checks, not browser pixel/rendering tests or a live authorization success claim.
+
+The available `pytest-homeassistant-custom-component==0.13.375` harness targets HA 2026.10.4 and imports a logger helper removed in 2026.11.1. Therefore the **full 111-test suite is not claimed as passing on 2026.11.1**. The independent smoke test avoids modifying HA or inventing replacement test helpers. `tools/run_tests.py` initializes HA before pytest plugins to preserve HA's HTTP/schema compatibility aliases.
 
 To reproduce the smoke test in a separate local environment:
 
 ```sh
 uv venv --python 3.14 .venv-smoke
 uv pip install --python .venv-smoke/bin/python homeassistant==2026.11.1 paho-mqtt==2.1.0 pytest-socket==0.8.1
-.venv-smoke/bin/python tools/smoke_setup.py --scratch /path/to/your/local/scratch
+.venv-smoke/bin/python tools/smoke_setup.py --scratch /path/to/your/local/scratch --exercise-failures
 ```
 
 Never point diagnostic tools at a live HA configuration. The smoke tool creates its own disposable subdirectory under the explicitly supplied scratch parent.
 
 ## Dependency regression
 
-`public-dependencies.json` records actual uv dry-run resolution checks against both Core versions. The removed 9.1.2 pin conflicts with HA 2026.11.1's exact 9.1.3 requirement; the corrected manifest resolves with both tested Core versions. The three dependency tests also check installed package metadata without relying on the HA fixture's mocked requirement installer. Do not override Core-owned package versions on a live instance.
+`public-dependencies.json` records actual uv dry-run resolution checks against both Core versions. The removed 9.1.2 pin conflicts with HA 2026.11.1's exact 9.1.3 requirement; the corrected manifest resolves with both tested Core versions. The dependency tests also check installed package metadata without relying on the HA fixture's mocked requirement installer. Do not override Core-owned package versions on a live instance.
 
 ## Evidence boundaries
 
 Synthetic fingerprint and palm-code tests verify decoding, not live biometric recognition. The normal fingerprint event's meaning was separately corroborated through an existing integration. No private device identifiers, household timestamps, credential IDs, raw histories, or biometric payloads are published.
 
-Not yet verified: live standalone OAuth/MQTT delivery, successful setup in the user's HA instance, palm-vein event-code mapping, cloud reliability, physical-use latency, or migration of existing automations. A locally working setup form does not establish those capabilities.
+Not yet verified: live standalone OAuth/MQTT delivery, successful setup in the user's HA instance, palm-vein event-code mapping, cloud reliability, physical-use latency, or migration of existing automations. A locally working setup form or diagnostic message does not establish those capabilities. v0.1.2 diagnoses failures; it is not a verified fix for the unresolved live authorization problem.
 
-This is a HACS custom repository, not a default catalogue entry. The retained upstream license is non-OSI and must not be relabelled to pass a catalogue check.
+This is a HACS-compatible custom repository, not a default catalogue entry. The retained upstream license is non-OSI and must not be relabelled to pass a catalogue check.

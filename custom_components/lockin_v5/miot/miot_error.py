@@ -85,10 +85,14 @@ class MIoTError(Exception):
     message: Any
 
     def __init__(
-        self,  message: Any, code: MIoTErrorCode = MIoTErrorCode.CODE_UNKNOWN
+        self, message: Any, code: MIoTErrorCode = MIoTErrorCode.CODE_UNKNOWN,
+        *, http_status: int | None = None, cloud_code: int | None = None
     ) -> None:
         self.message = message
         self.code = code
+        # Local adaptation: retain safe numeric diagnostics, never response bodies.
+        self.http_status = http_status if type(http_status) is int and 100 <= http_status <= 599 else None
+        self.cloud_code = cloud_code if type(cloud_code) is int and -2147483648 <= cloud_code <= 2147483647 else None
         super().__init__(self.message)
 
     def to_str(self) -> str:

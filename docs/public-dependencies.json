@@ -1,5 +1,5 @@
 {
-  "integration_version": "0.1.1",
+  "integration_version": "0.1.2",
   "method": "uv pip install --dry-run",
   "environment_changed": false,
   "checks": [

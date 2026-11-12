@@ -1,14 +1,14 @@
 # Lockin V5 Max INT for Home Assistant
 
-**v0.1.1 · experimental · read-only · only `loock.lock.v2203`**
+**v0.1.2 · experimental · read-only · only `loock.lock.v2203`**
 
 A standalone, single-model integration that turns cryptic lock reports into readable Home Assistant sensors and events. No existing integration is required for runtime operation. This project is unofficial and is not endorsed by the device or cloud vendor.
 
 > **Test candidate, not a verified live migration.** The decoder and Home Assistant lifecycle are tested locally, with external connections blocked and a loopback-only setup HTTP test. Fresh authorization and event delivery through this standalone integration still need live verification. Keep your existing integration until comparison succeeds.
 
-## Install with HACS
+## Install with HACS / Marketplace
 
-Requires **Home Assistant 2026.10.4 or later** and an existing HACS installation. This is a **custom repository**, not a default HACS catalogue entry.
+Requires **Home Assistant 2026.10.4 or later** and a HACS-compatible custom-repository manager (HACS or Marketplace). This is a **custom repository**, not a default catalogue entry. The steps below use HACS labels; Marketplace may use different labels.
 
 1. In **HACS → ⋮ → Custom repositories**, add:
    ```text
@@ -16,16 +16,20 @@ Requires **Home Assistant 2026.10.4 or later** and an existing HACS installation
    ```
 2. Select type **Integration**, then **Add**.
 3. Find **Lockin V5 Max INT**, open it, and download it.
-4. Back up your HA configuration before restarting **Home Assistant Core**. Restarting briefly interrupts automations and entity availability; it does not change the lock's standalone operation.
+4. Back up your HA configuration and follow your manager's restart requirement. A newly discoverable first installation can proceed without a restart prompt; updates to already loaded code may require a **Home Assistant Core** restart. Restarting briefly interrupts automations and entity availability, not the lock's standalone operation.
 5. Go to **Settings → Devices & services → Add integration → Lockin V5 Max INT**.
 6. Select the account's actual region and complete authorization in your browser. Only `loock.lock.v2203` devices are selectable.
 7. Keep the existing integration and automations untouched. Compare reports during normal, user-operated use before migrating references.
 
-**Authorization callback:** the upstream registered callback origin is `http://homeassistant.local:8123`; it must resolve to this HA instance from your browser. Do not expose HA publicly, weaken TLS, or change DNS/proxy rules just to make setup work. The setup link expires after ten minutes; after authorization, return to the flow and press Submit. Never share login URLs, codes, or tokens.
+**Authorization callback:** the upstream registered callback origin is `http://homeassistant.local:8123`; the callback must reach this HA instance from your browser. Do not expose HA publicly, weaken TLS, or change DNS/proxy rules just to make setup work. The setup link expires after ten minutes; after authorization, return to the flow and press Submit. Never share login URLs, codes, or tokens. Changing only the callback hostname to your HA LAN IP **after provider consent** does not change the original redirect address retained for token exchange; this code path is tested offline, not a guarantee of live cloud success. Do not edit `redirect_uri` inside the original login link. The native HA webhook component must be available; `default_config` normally supplies it. Minimal custom HA configurations are not covered by the callback smoke test without that component.
 
 **Manual alternative:** copy `custom_components/lockin_v5/` to `/config/custom_components/lockin_v5/`, then follow the restart/setup steps above. Do not overwrite another integration.
 
-**Upgrading from v0.1.0:** download v0.1.1 in HACS, back up, and restart Home Assistant Core before retrying setup. v0.1.0 incorrectly pinned a Core-owned dependency to `python-slugify==9.1.2`; HA 2026.11.1 requires `9.1.3`. v0.1.1 lets HA manage that dependency. Do not manually downgrade HA's packages. If setup still fails, inspect **Settings → System → Logs** for the specific `lockin_v5` traceback; omit tokens and authorization URLs when reporting it.
+**Updating:** refresh the repository's release information if necessary, install **v0.1.2**, and follow your manager's restart requirement. Restarting an old version is not a substitute for downloading the update. v0.1.1 removed v0.1.0's incompatible `python-slugify==9.1.2` pin; HA continues to manage that dependency. Do not manually downgrade HA's packages.
+
+**v0.1.2 is a diagnostic release, not a verified login fix.** If setup fails after the callback, it now identifies **token exchange** versus **device discovery**, with a fixed error category and numeric HTTP/API codes when available. The same safe summary is written to the integration's log without a raw traceback. Share the displayed diagnostic text only—not browser URLs, authorization codes, tokens, account information, or raw logs. HTTP 200 alongside an API error means the request received an HTTP response, not that authorization succeeded. No retry, account authorization, or device action is performed automatically.
+
+**Return to v0.1.1:** use your manager's version selection to install the previous release and follow its restart requirement. v0.1.2 makes no config-entry or observation-store schema migration. Both versions retain the dependency correction; v0.1.1 simply lacks these diagnostics.
 
 **Rollback:** remove the new config entry, remove this integration through HACS (or delete only `/config/custom_components/lockin_v5/` for a manual installation), and restart Core. Its own observation store is removed when its config entry is removed. Leave/re-enable the old integration; restore your backup if needed. No device settings or enrolled credentials are changed.
 
@@ -64,7 +68,7 @@ There are **no lock, switch, button or other actuator platforms**, and no device
 
 ## Testing and development
 
-Full-suite baseline: **Python 3.14 / Home Assistant 2026.10.4**. A fresh **HA 2026.11.1** instance is separately exercised through its authenticated setup HTTP endpoint, without the older pytest HA harness. See [testing](docs/TESTING.md), [actual test output](docs/public-tests.txt), and [release notes](docs/RELEASE-v0.1.1.md).
+Full-suite baseline: **Python 3.14 / Home Assistant 2026.10.4**. A fresh **HA 2026.11.1** instance is separately exercised through its authenticated setup HTTP endpoint, including synthetic callback and failure responses, without the older pytest HA harness. See [testing](docs/TESTING.md), [actual test output](docs/public-tests.txt), and [release notes](docs/RELEASE-v0.1.2.md).
 
 ```sh
 uv venv --python 3.14 .venv

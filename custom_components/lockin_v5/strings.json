@@ -11,7 +11,7 @@
     "abort": {
       "already_configured": "This lock is already configured.",
       "login_expired": "Authorization expired. Start setup again.",
-      "login_failed": "Authorization or device discovery failed. Start setup again; check the selected server and network.",
+      "login_failed": "Setup failed during {stage}. Diagnostic: {detail}. Share this diagnostic text, not the login URL. This message contains no authorization codes, tokens, or account data.",
       "no_supported_device": "No accessible loock.lock.v2203 was found on this account/server. Other models are not supported.",
       "reauth_wrong_account": "The original lock was not found. Sign in with its original account.",
       "reauth_successful": "Authorization renewed."
