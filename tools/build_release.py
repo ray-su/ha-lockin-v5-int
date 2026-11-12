@@ -13,7 +13,7 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / "docs"
-PUBLIC_DOCS = ("TESTING.md", "RELEASE-v0.1.0.md", "public-tests.txt", "public-lint.txt", "public-build.json")
+PUBLIC_DOCS = ("TESTING.md", "RELEASE-v0.1.0.md", "RELEASE-v0.1.1.md", "public-tests.txt", "public-smoke-ha-2026.11.1.json", "public-dependencies.json", "public-lint.txt", "public-build.json")
 ROOT_FILES = ("README.md", "LICENSE.md", "hacs.json", ".gitignore", "requirements-test.txt", "pyproject.toml", ".coveragerc")
 
 
@@ -44,7 +44,7 @@ def run(args, filename):
 def main():
     if len(sys.argv) != 1:
         raise SystemExit("Build takes no private history inputs. Use replay_history.py separately.")
-    tests = run([sys.executable, "-m", "pytest", "-q", "--cov=custom_components.lockin_v5", "--cov-report=term-missing"], "public-tests.txt")
+    tests = run([sys.executable, str(ROOT / "tools/run_tests.py"), "-q", "--cov=custom_components.lockin_v5", "--cov-report=term-missing"], "public-tests.txt")
     run([str(Path(sys.executable).with_name("ruff")), "check", "custom_components/lockin_v5", "tests", "tools"], "public-lint.txt")
     manifest = json.loads((ROOT / "custom_components/lockin_v5/manifest.json").read_text())
     metadata = {
@@ -52,7 +52,7 @@ def main():
         "version": manifest["version"],
         "python": platform.python_version(),
         "home_assistant": importlib.metadata.version("homeassistant"),
-        "network_in_tests": "external sockets disabled; cloud/auth mocked",
+        "network_in_tests": "external sockets disabled; loopback-only setup HTTP tests; cloud/auth mocked",
         "coverage_scope": "new integration code, excluding vendored transport",
         "live_standalone_oauth_and_device_validation": "not performed",
         "private_history_included": False,

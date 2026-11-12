@@ -1,5 +1,5 @@
 # Local environments, credentials, generated state, and private observations
-.venv/
+.venv*/
 .env
 .env.*
 *.pem
@@ -21,6 +21,9 @@ htmlcov/
 /docs/*
 !/docs/TESTING.md
 !/docs/RELEASE-v0.1.0.md
+!/docs/RELEASE-v0.1.1.md
+!/docs/public-smoke-ha-2026.11.1.json
+!/docs/public-dependencies.json
 !/docs/public-tests.txt
 !/docs/public-lint.txt
 !/docs/public-build.json

@@ -3,7 +3,7 @@ DOMAIN = "lockin_v5"
 MODEL = "loock.lock.v2203"
 NAME = "Lockin V5 Max INT"
 PLATFORMS = ["sensor", "event"]
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 REGIONS = {"sg": "Singapore / Australia", "cn": "China", "de": "Europe", "i2": "India", "ru": "Russia", "us": "United States"}
 # Model-specific read-only properties. Do not poll action-only properties.
 READ_PROPERTIES = [(3, 1021), (4, 1003), (4, 1034), (7, 2), (10, 1), (11, 15)]

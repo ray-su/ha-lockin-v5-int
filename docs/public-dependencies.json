@@ -1,0 +1,30 @@
+{
+  "integration_version": "0.1.1",
+  "method": "uv pip install --dry-run",
+  "environment_changed": false,
+  "checks": [
+    {
+      "home_assistant": "2026.10.4",
+      "requirements": [
+        "paho-mqtt==2.1.0"
+      ],
+      "exit_code": 0,
+      "resolved": true
+    },
+    {
+      "home_assistant": "2026.11.1",
+      "requirements": [
+        "paho-mqtt==2.1.0"
+      ],
+      "exit_code": 0,
+      "resolved": true
+    }
+  ],
+  "removed_pin_regression": {
+    "home_assistant": "2026.11.1",
+    "removed_requirement": "python-slugify==9.1.2",
+    "core_requirement": "python-slugify==9.1.3",
+    "exit_code": 1,
+    "version_conflict_confirmed": true
+  }
+}

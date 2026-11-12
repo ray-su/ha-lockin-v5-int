@@ -1,10 +1,10 @@
 # Lockin V5 Max INT for Home Assistant
 
-**v0.1.0 · experimental · read-only · only `loock.lock.v2203`**
+**v0.1.1 · experimental · read-only · only `loock.lock.v2203`**
 
 A standalone, single-model integration that turns cryptic lock reports into readable Home Assistant sensors and events. No existing integration is required for runtime operation. This project is unofficial and is not endorsed by the device or cloud vendor.
 
-> **Test candidate, not a verified live migration.** The decoder and Home Assistant lifecycle are tested locally with networking disabled. Fresh authorization and event delivery through this standalone integration still need live verification. Keep your existing integration until comparison succeeds.
+> **Test candidate, not a verified live migration.** The decoder and Home Assistant lifecycle are tested locally, with external connections blocked and a loopback-only setup HTTP test. Fresh authorization and event delivery through this standalone integration still need live verification. Keep your existing integration until comparison succeeds.
 
 ## Install with HACS
 
@@ -24,6 +24,8 @@ Requires **Home Assistant 2026.10.4 or later** and an existing HACS installation
 **Authorization callback:** the upstream registered callback origin is `http://homeassistant.local:8123`; it must resolve to this HA instance from your browser. Do not expose HA publicly, weaken TLS, or change DNS/proxy rules just to make setup work. The setup link expires after ten minutes; after authorization, return to the flow and press Submit. Never share login URLs, codes, or tokens.
 
 **Manual alternative:** copy `custom_components/lockin_v5/` to `/config/custom_components/lockin_v5/`, then follow the restart/setup steps above. Do not overwrite another integration.
+
+**Upgrading from v0.1.0:** download v0.1.1 in HACS, back up, and restart Home Assistant Core before retrying setup. v0.1.0 incorrectly pinned a Core-owned dependency to `python-slugify==9.1.2`; HA 2026.11.1 requires `9.1.3`. v0.1.1 lets HA manage that dependency. Do not manually downgrade HA's packages. If setup still fails, inspect **Settings → System → Logs** for the specific `lockin_v5` traceback; omit tokens and authorization URLs when reporting it.
 
 **Rollback:** remove the new config entry, remove this integration through HACS (or delete only `/config/custom_components/lockin_v5/` for a manual installation), and restart Core. Its own observation store is removed when its config entry is removed. Leave/re-enable the old integration; restore your backup if needed. No device settings or enrolled credentials are changed.
 
@@ -62,17 +64,17 @@ There are **no lock, switch, button or other actuator platforms**, and no device
 
 ## Testing and development
 
-Test baseline: **Python 3.14 / Home Assistant 2026.10.4**. See [testing](docs/TESTING.md), [actual test output](docs/public-tests.txt), and [release notes](docs/RELEASE-v0.1.0.md).
+Full-suite baseline: **Python 3.14 / Home Assistant 2026.10.4**. A fresh **HA 2026.11.1** instance is separately exercised through its authenticated setup HTTP endpoint, without the older pytest HA harness. See [testing](docs/TESTING.md), [actual test output](docs/public-tests.txt), and [release notes](docs/RELEASE-v0.1.1.md).
 
 ```sh
 uv venv --python 3.14 .venv
 uv pip install --python .venv/bin/python -r requirements-test.txt
-.venv/bin/python -m pytest -q
+.venv/bin/python tools/run_tests.py -q
 .venv/bin/ruff check custom_components/lockin_v5 tests tools
 .venv/bin/python tools/build_release.py
 ```
 
-Tests use synthetic identifiers/credentials and mocked cloud responses, with network sockets disabled. Private histories and development environments are excluded from publication. The optional history replay tool accepts your own authorized export and prints aggregates, not raw identifiers. Do not upload the export or household activity output to an issue.
+Tests use synthetic identifiers/credentials and mocked cloud responses, with external connections blocked. HTTP tests permit loopback connections only. Private histories and development environments are excluded from publication. The optional history replay tool accepts your own authorized export and prints aggregates, not raw identifiers. Do not upload the export or household activity output to an issue.
 
 No installation scripts, CI schedules, monitoring jobs, or automatic device commands are included.
 
