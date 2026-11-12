@@ -12,7 +12,10 @@ async def test_one_binary_sensor_and_unknown_initial_state(hass, entry, cloud):
     assert len(sensors) == 1
     state = sensors[0]
     assert state.attributes["friendly_name"].endswith("Front door lock")
-    assert state.attributes["device_class"] == "lock"
+    assert state.attributes["device_class"] == "door"
+    # Match the inspected NeonPlan3D Contact selector's eligibility predicate.
+    assert state.entity_id.startswith("binary_sensor.")
+    assert state.attributes["device_class"] in ("door", "window", "opening", "garage_door", "")
     assert state.state == "unknown"
     assert state.attributes["last_observation_only"] is True
     assert "physical door" in state.attributes["caution"]

@@ -18,4 +18,4 @@ custom_components/lockin_v5/sensor.py             55      0   100%
 custom_components/lockin_v5/setup_errors.py       33      0   100%
 ----------------------------------------------------------------------------
 TOTAL                                            711     27    96%
-118 passed in 1.60s
+118 passed in 1.65s

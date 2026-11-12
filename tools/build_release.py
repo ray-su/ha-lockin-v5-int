@@ -13,7 +13,7 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / "docs"
-PUBLIC_DOCS = ("TESTING.md", "RELEASE-v0.1.0.md", "RELEASE-v0.1.1.md", "RELEASE-v0.1.2.md", "RELEASE-v0.1.3.md", "RELEASE-v0.1.4.md", "public-oauth-validation.json", "public-tests.txt", "public-smoke-ha-2026.11.1.json", "public-dependencies.json", "public-lint.txt", "public-build.json")
+PUBLIC_DOCS = ("TESTING.md", "RELEASE-v0.1.0.md", "RELEASE-v0.1.1.md", "RELEASE-v0.1.2.md", "RELEASE-v0.1.3.md", "RELEASE-v0.1.4.md", "RELEASE-v0.1.5.md", "public-oauth-validation.json", "public-tests.txt", "public-smoke-ha-2026.11.1.json", "public-dependencies.json", "public-lint.txt", "public-build.json")
 ROOT_FILES = ("README.md", "LICENSE.md", "hacs.json", ".gitignore", "requirements-test.txt", "pyproject.toml", ".coveragerc")
 
 

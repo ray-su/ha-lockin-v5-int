@@ -1,6 +1,6 @@
 # Lockin V5 Max INT for Home Assistant
 
-**v0.1.4 · experimental · read-only · only `loock.lock.v2203`**
+**v0.1.5 · experimental · read-only · only `loock.lock.v2203`**
 
 A standalone, single-model integration that turns cryptic lock reports into readable Home Assistant sensors and events. No existing integration is required for runtime operation. This project is unofficial and is not endorsed by the device or cloud vendor.
 
@@ -25,21 +25,21 @@ Requires **Home Assistant 2026.10.4 or later** and a HACS-compatible custom-repo
 
 **Manual alternative:** copy `custom_components/lockin_v5/` to `/config/custom_components/lockin_v5/`, then follow the restart/setup steps above. Do not overwrite another integration.
 
-**Updating:** refresh the repository's release information if necessary, install **v0.1.4**, and follow your manager's restart requirement. Restarting an old version is not a substitute for downloading the update. v0.1.1 removed v0.1.0's incompatible `python-slugify==9.1.2` pin; HA continues to manage that dependency. Do not manually downgrade HA's packages.
+**Updating:** refresh the repository's release information if necessary, install **v0.1.5**, and follow your manager's restart requirement. Restarting an old version is not a substitute for downloading the update. v0.1.1 removed v0.1.0's incompatible `python-slugify==9.1.2` pin; HA continues to manage that dependency. Do not manually downgrade HA's packages.
 
 **v0.1.3 aligns OAuth with the exercised upstream conventions.** It preserves the vendored transport's version identity, supplies HA system metadata, uses the SDK's state convention and decimal callback identifier, and retains one client through token exchange. The exact field behind the prior API -6 failure was not isolated; the combined candidate passed the real token-only comparison. If setup fails after the callback, the retained diagnostics identify **token exchange** versus **device discovery**, with a fixed error category and numeric HTTP/API codes when available. The same safe summary is written to the integration's log without a raw traceback. Share the displayed diagnostic text only—not browser URLs, authorization codes, tokens, account information, or raw logs. HTTP 200 alongside an API error means the request received an HTTP response, not that authorization succeeded. No retry, account authorization, or device action is performed automatically.
 
-**Return to v0.1.3:** use your manager's version selection to install the previous release and follow its restart requirement. v0.1.4 makes no config-entry or observation-store schema migration. The added binary sensor is no longer supplied after rollback; the existing sensors and events remain unchanged.
+**Return to v0.1.4:** use your manager's version selection and follow its restart requirement. No config-entry or observation-store schema migration occurs. Rollback restores the binary sensor's `lock` class, which is excluded from NeonPlan3D's Contact picker. All original sensors and events remain unchanged.
 
 **Rollback:** remove the new config entry, remove this integration through HACS (or delete only `/config/custom_components/lockin_v5/` for a manual installation), and restart Core. Its own observation store is removed when its config entry is removed. Leave/re-enable the old integration; restore your backup if needed. No device settings or enrolled credentials are changed.
 
 ## Readable reports
 
-### New in v0.1.4: Front door lock binary sensor
+### Front door lock binary sensor — Contact compatibility in v0.1.5
 
-Adds exactly one read-only `binary_sensor` named **Front door lock**, device class `lock`: **off = Locked**, **on = Unlocked**, **unknown = no recognized report yet**. All pre-existing sensor/event definitions and unique IDs remain unchanged. It projects the existing **Last reported lock state**, without new polling, actions or timers. Its `observed_at` and cloud-connection attributes expose report provenance; the last report is retained across disconnects/restarts and may be stale.
+Adds exactly one read-only `binary_sensor` named **Front door lock**, device class `door` for visualization compatibility: **off/Closed = Locked**, **on/Open = Unlocked**, **unknown = no recognized report yet**. The v0.1.4 sensor's name, unique ID and state mapping are preserved; only its device class changes. All pre-existing sensor/event definitions and unique IDs remain unchanged. It projects the existing **Last reported lock state**, without new polling, actions or timers. Its `observed_at` and cloud-connection attributes expose report provenance; the last report is retained across disconnects/restarts and may be stale.
 
-For NeonPlan3D, select this new binary sensor if your door binding accepts it. If used in a contact-sensor slot, “open” means **unlocked**, not necessarily physically open. This is not a physical door contact sensor; NeonPlan3D rendering/compatibility has not been live-tested. Find the generated entity ID on the device page; its prefix depends on your device name.
+For NeonPlan3D, select **Front door lock** in the door's **Contact** selector, not Smart lock. The inspected picker accepts this `door`-class binary sensor; live rendering still needs user verification. If used in a contact-sensor slot, “open” means **unlocked**, not necessarily physically open. This is not a physical door contact sensor; NeonPlan3D rendering/compatibility has not been live-tested. Find the generated entity ID on the device page; its prefix depends on your device name.
 
 | Input | Example display |
 |---|---|
@@ -74,7 +74,7 @@ There are **no lock, switch, button or other actuator platforms**, and no device
 
 ## Testing and development
 
-Full-suite baseline: **Python 3.14 / Home Assistant 2026.10.4**. A fresh **HA 2026.11.1** instance is separately exercised through its authenticated setup HTTP endpoint, including synthetic callback and failure responses, without the older pytest HA harness. See [testing](docs/TESTING.md), [actual test output](docs/public-tests.txt), and [release notes](docs/RELEASE-v0.1.4.md).
+Full-suite baseline: **Python 3.14 / Home Assistant 2026.10.4**. A fresh **HA 2026.11.1** instance is separately exercised through its authenticated setup HTTP endpoint, including synthetic callback and failure responses, without the older pytest HA harness. See [testing](docs/TESTING.md), [actual test output](docs/public-tests.txt), and [release notes](docs/RELEASE-v0.1.5.md).
 
 ```sh
 uv venv --python 3.14 .venv

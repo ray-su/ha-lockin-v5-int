@@ -14,7 +14,9 @@ class LockinLockReport(BinarySensorEntity):
     _attr_should_poll = False
     _attr_has_entity_name = True
     _attr_name = "Front door lock"
-    _attr_device_class = BinarySensorDeviceClass.LOCK
+    # Visualization proxy: NeonPlan3D's Contact picker accepts door, not lock.
+    # Preserve identity and state mapping; this is NOT a physical door contact.
+    _attr_device_class = BinarySensorDeviceClass.DOOR
 
     def __init__(self, runtime):
         self.runtime = runtime
