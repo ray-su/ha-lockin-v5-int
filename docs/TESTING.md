@@ -4,7 +4,7 @@
 
 ## Full suite: HA 2026.10.4
 
-The **115 tests** use the real Home Assistant test runtime. They cover exact-model selection, OAuth state/expiry/reauth using synthetic credentials, readable decoding, duplicate suppression, persistence, setup/unload/removal, synthetic MQTT parsing, mocked cloud HTTP requests, HACS metadata, installed dependency metadata, and browser-facing setup response serialization. They also exercise stage-specific failure messages, real transport error parsing with mocked HTTP responses, safe numeric-code validation, secret-bearing exception redaction, and a post-consent callback-host substitution. External connections are blocked; setup HTTP tests allow loopback only. No test controls a lock.
+The **118 tests** use the real Home Assistant test runtime. They cover exact-model selection, OAuth state/expiry/reauth using synthetic credentials, readable decoding, duplicate suppression, persistence, setup/unload/removal, synthetic MQTT parsing, mocked cloud HTTP requests, HACS metadata, installed dependency metadata, and browser-facing setup response serialization. They also exercise stage-specific failure messages, real transport error parsing with mocked HTTP responses, safe numeric-code validation, secret-bearing exception redaction, and a post-consent callback-host substitution. External connections are blocked; setup HTTP tests allow loopback only. No test controls a lock.
 
 ## Setup and diagnostic smoke test: HA 2026.11.1
 
@@ -14,7 +14,7 @@ The test exercises authenticated POST `/api/config/config_entries/flow`, verifyi
 
 These are backend HTTP response and message-format checks, not browser pixel/rendering tests or a live authorization success claim.
 
-The available `pytest-homeassistant-custom-component==0.13.375` harness targets HA 2026.10.4 and imports a logger helper removed in 2026.11.1. Therefore the **full 115-test suite is not claimed as passing on 2026.11.1**. The independent smoke test avoids modifying HA or inventing replacement test helpers. `tools/run_tests.py` initializes HA before pytest plugins to preserve HA's HTTP/schema compatibility aliases.
+The available `pytest-homeassistant-custom-component==0.13.375` harness targets HA 2026.10.4 and imports a logger helper removed in 2026.11.1. Therefore the **full 118-test suite is not claimed as passing on 2026.11.1**. The independent smoke test avoids modifying HA or inventing replacement test helpers. `tools/run_tests.py` initializes HA before pytest plugins to preserve HA's HTTP/schema compatibility aliases.
 
 To reproduce the smoke test in a separate local environment:
 

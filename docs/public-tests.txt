@@ -1,20 +1,21 @@
-........................................................................ [ 62%]
-...........................................                              [100%]
+........................................................................ [ 61%]
+..............................................                           [100%]
 ================================ tests coverage ================================
 _______________ coverage: platform darwin, python 3.14.7-final-0 _______________
 
-Name                                          Stmts   Miss  Cover   Missing
----------------------------------------------------------------------------
-custom_components/lockin_v5/__init__.py          39      2    95%   34, 39
-custom_components/lockin_v5/api.py               18      0   100%
-custom_components/lockin_v5/config_flow.py      145      7    95%   62-63, 73-75, 133, 168
-custom_components/lockin_v5/const.py              8      0   100%
-custom_components/lockin_v5/decoder.py          176     13    93%   30, 67, 71, 75, 106, 115, 117, 125, 137, 147, 149, 169, 175
-custom_components/lockin_v5/diagnostics.py        4      0   100%
-custom_components/lockin_v5/event.py             26      0   100%
-custom_components/lockin_v5/runtime.py          183      5    97%   61, 63, 72, 138, 192
-custom_components/lockin_v5/sensor.py            55      0   100%
-custom_components/lockin_v5/setup_errors.py      33      0   100%
----------------------------------------------------------------------------
-TOTAL                                           687     27    96%
-115 passed in 1.48s
+Name                                           Stmts   Miss  Cover   Missing
+----------------------------------------------------------------------------
+custom_components/lockin_v5/__init__.py           39      2    95%   34, 39
+custom_components/lockin_v5/api.py                18      0   100%
+custom_components/lockin_v5/binary_sensor.py      24      0   100%
+custom_components/lockin_v5/config_flow.py       145      7    95%   62-63, 73-75, 133, 168
+custom_components/lockin_v5/const.py               8      0   100%
+custom_components/lockin_v5/decoder.py           176     13    93%   30, 67, 71, 75, 106, 115, 117, 125, 137, 147, 149, 169, 175
+custom_components/lockin_v5/diagnostics.py         4      0   100%
+custom_components/lockin_v5/event.py              26      0   100%
+custom_components/lockin_v5/runtime.py           183      5    97%   61, 63, 72, 138, 192
+custom_components/lockin_v5/sensor.py             55      0   100%
+custom_components/lockin_v5/setup_errors.py       33      0   100%
+----------------------------------------------------------------------------
+TOTAL                                            711     27    96%
+118 passed in 1.60s
