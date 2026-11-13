@@ -4,7 +4,7 @@
 
 ## Full suite: HA 2026.10.4
 
-The **118 tests** use the real Home Assistant test runtime. They cover exact-model selection, OAuth state/expiry/reauth using synthetic credentials, readable decoding, duplicate suppression, persistence, setup/unload/removal, synthetic MQTT parsing, mocked cloud HTTP requests, HACS metadata, installed dependency metadata, and browser-facing setup response serialization. They also exercise stage-specific failure messages, real transport error parsing with mocked HTTP responses, safe numeric-code validation, secret-bearing exception redaction, and a post-consent callback-host substitution. External connections are blocked; setup HTTP tests allow loopback only. No test controls a lock.
+The **125 tests** use the real Home Assistant test runtime. They cover exact-model selection, OAuth state/expiry/reauth using synthetic credentials, readable decoding, duplicate suppression, persistence, setup/unload/removal, synthetic MQTT parsing, mocked cloud HTTP requests, HACS metadata, installed dependency metadata, and browser-facing setup response serialization. They also exercise stage-specific failure messages, real transport error parsing with mocked HTTP responses, safe numeric-code validation, secret-bearing exception redaction, and a post-consent callback-host substitution. External connections are blocked; setup HTTP tests allow loopback only. No test controls a lock.
 
 ## Setup and diagnostic smoke test: HA 2026.11.1
 
@@ -14,7 +14,7 @@ The test exercises authenticated POST `/api/config/config_entries/flow`, verifyi
 
 These are backend HTTP response and message-format checks, not browser pixel/rendering tests or a live authorization success claim.
 
-The available `pytest-homeassistant-custom-component==0.13.375` harness targets HA 2026.10.4 and imports a logger helper removed in 2026.11.1. Therefore the **full 118-test suite is not claimed as passing on 2026.11.1**. The independent smoke test avoids modifying HA or inventing replacement test helpers. `tools/run_tests.py` initializes HA before pytest plugins to preserve HA's HTTP/schema compatibility aliases.
+The available `pytest-homeassistant-custom-component==0.13.375` harness targets HA 2026.10.4 and imports a logger helper removed in 2026.11.1. Therefore the **full 125-test suite is not claimed as passing on 2026.11.1**. The independent smoke test avoids modifying HA or inventing replacement test helpers. `tools/run_tests.py` initializes HA before pytest plugins to preserve HA's HTTP/schema compatibility aliases.
 
 To reproduce the smoke test in a separate local environment:
 
@@ -42,6 +42,12 @@ Tokens were checked in memory and discarded, never copied into HA or used for de
 
 The offline suite additionally verifies pinned transport identity, SDK-derived state, decimal callback identifiers, callback replay rejection and retained-client cleanup on abort/expiry.
 
-Not yet verified: live standalone device discovery/MQTT delivery, successful setup in the user's HA instance, palm-vein event-code mapping, cloud reliability, physical-use latency, or migration of existing automations. Keep existing integrations and automations until those checks succeed.
+## Recorded live delivery and app correlation
+
+A private read-only comparison of user-supplied app logs and HA recorder history matched fingerprint/face/palm labels to standard method codes 2/5/7. Selected palm, inside-operation, locking, visitor and doorbell reports were independently present on this standalone integration's event entities. This establishes actual delivery for those samples, not comprehensive coverage. Some app inside-handle entries lacked fresh standard-cloud counterparts. Property 3/1021 stayed Locked through an observed cycle; app Door closed matches a standard locked action but does not prove physical contact sensing.
+
+New synthetic regressions verify app-description additions without action/state/type changes, exact legacy dedup hashes and suppression of already-seen reports after upgrade. Presentation metadata is excluded from the event identity. Old persisted attributes are not rewritten.
+
+Not yet verified: comprehensive cloud reliability, physical door position, end-to-end latency guarantees, NeonPlan3D rendering or migration of existing automations. No household screenshots, names, timestamps, IDs or histories are published. Existing integrations/automations should remain until the desired behavior is validated.
 
 This is a HACS-compatible custom repository, not a default catalogue entry. The retained upstream license is non-OSI and must not be relabelled to pass a catalogue check.

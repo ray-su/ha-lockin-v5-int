@@ -1,6 +1,6 @@
 {
-  "built_at_utc": "2026-11-12T15:39:07.668639+00:00",
-  "version": "0.1.5",
+  "built_at_utc": "2026-11-13T16:07:53.259510+00:00",
+  "version": "0.1.6",
   "python": "3.14.7",
   "home_assistant": "2026.10.4",
   "network_in_tests": "external sockets disabled; loopback-only setup HTTP tests; cloud/auth mocked",

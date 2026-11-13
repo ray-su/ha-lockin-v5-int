@@ -116,7 +116,7 @@ class Decoder:
         elif (siid, eiid) == (10, 1):
             category, kind, summary = "warning", "warning", "Low battery reported"
         elif (siid, eiid) in ((7, 3), (7, 4), (11, 1), (11, 2)):
-            kind, summary = {(7, 3): ("passed_by", "Someone passed by"), (7, 4): ("at_door", "Someone at the door"), (11, 1): ("departed", "Visitor departed"), (11, 2): ("ultrasonic_activity", "Frequent ultrasonic activity")}[siid, eiid]
+            kind, summary = {(7, 3): ("passed_by", "Someone appeared at the door"), (7, 4): ("at_door", "Someone at the door"), (11, 1): ("departed", "Visitor departed"), (11, 2): ("ultrasonic_activity", "Frequent ultrasonic activity")}[siid, eiid]
             category = "visitor"
         elif (siid, eiid) in ((11, 3), (12, 1023)):
             # Firmware debug strings can contain identifiers/face data. Do not persist them.
@@ -126,6 +126,18 @@ class Decoder:
         # Never store operation/user IDs or cloud video IDs in entities or dedup state.
         identity = [source, occurred.isoformat() if time_source == "device" else None, kind, attrs]
         fingerprint = hashlib.sha256(json.dumps(identity, sort_keys=True).encode()).hexdigest()
+        # Presentation only: keep these out of the persisted dedup identity so
+        # an upgrade cannot turn an already-observed report into a new event.
+        if category == "lock":
+            app_description = None
+            if (action, method, position) == (1, 15, 3):
+                app_description = "Door closed report"
+            elif (action, method, position) == (2, 15, 1):
+                app_description = "Inside-handle opening"
+            elif action == 2 and position == 2:
+                app_description = {2: "Fingerprint unlock", 5: "Face unlock", 7: "Palm recognition unlock"}.get(method)
+            if app_description:
+                attrs = {**attrs, "app_description": app_description}
         return DecodedEvent(category, kind, summary, occurred, time_source, source, fingerprint, attrs)
 
     def property(self, payload: dict, received_at: datetime) -> tuple[str, Any, dict] | None:
